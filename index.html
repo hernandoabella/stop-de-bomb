@@ -1,20 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stop The Bomb</title>
-  </head>
-  <body>
-    <h1>Stop the Bomb</h1>
-    <div id="timer">1:00</div>
-    <div id="buttons">
-      <button id="yellow">Amarillo</button>
-      <button id="red">Rojo</button>
-      <button id="green">Verde</button>
-    </div>
-    <div id="result"></div>
-    <script src="script.js"></script>
-  </body>
+<html>
+<head>
+    <title>Bomba</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: red;
+        }
+
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px;
+            color: red;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>BOMBA</h1>
+    <div id="timer">60</div>
+    <button id="stopButton1">Detener</button>
+    <button id="stopButton2">Detener</button>
+    <button id="stopButton3">Detener</button>
+    <script>
+        // Variables globales
+        let countdown;
+        let timeRemaining = 60;
+        let isGameStarted = false;
+        let isBombDeactivated = false;
+
+        // Elementos del DOM
+        const timerDisplay = document.getElementById('timer');
+        const buttons = document.querySelectorAll('button');
+
+        // Función para actualizar el temporizador
+        function updateTimer() {
+            if (isBombDeactivated) {
+                return; // No actualizar si la bomba está desactivada
+            }
+            timeRemaining--;
+            if (timeRemaining <= 0) {
+                clearInterval(countdown);
+                timerDisplay.textContent = 'BOOM';
+                // Puedes agregar aquí cualquier lógica adicional cuando la bomba explote.
+            } else {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+        }
+
+        // Función para detener la bomba y mostrar un mensaje de éxito
+        function stopBomb(buttonIndex) {
+            if (!isGameStarted) {
+                return; // No se puede detener antes de iniciar
+            }
+
+            clearInterval(countdown);
+            if (!isBombDeactivated) {
+                if (buttonIndex === 0) {
+                    timerDisplay.textContent = 'Desactivado';
+                    isBombDeactivated = true;
+                } else {
+                    // Generar un número aleatorio entre 0 y 500
+                    const randomNumber = Math.floor(Math.random() * 501);
+                    timeRemaining = 60; // Reiniciar el temporizador
+                    countdown = setInterval(updateTimer, randomNumber);
+                }
+            }
+        }
+
+        // Asignar evento de detener a cada botón
+        buttons.forEach((button, index) => {
+            button.addEventListener('click', function () {
+                stopBomb(index);
+            });
+        });
+
+        // Iniciar el contador automáticamente al cargar la página
+        function startGameAutomatically() {
+            isGameStarted = true;
+            countdown = setInterval(updateTimer, 1000);
+        }
+
+        // Iniciar el juego automáticamente al cargar la página
+        document.addEventListener('DOMContentLoaded', startGameAutomatically);
+    </script>
+</body>
 </html>
